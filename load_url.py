@@ -1,7 +1,7 @@
 """Load a webpage."""
 # References
 # https://python.langchain.com/en/latest/modules/agents/tools/examples/requests.html?highlight=webpage#requests
-# https://python.langchain.com/en/latest/modules/models/chat/examples/streaming.html
+# https://python.langchain.com/en/latest/modules/indexes/text_splitters/getting_started.html
 import os
 from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
@@ -10,6 +10,7 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # Load default environment variables (.env)
 load_dotenv()
@@ -22,7 +23,18 @@ content = requests.get("https://www.theonion.com/")
 
 truncated_content = content[:8000]
 
-print(truncated_content)
+# print(truncated_content)
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size = 1000,
+    chunk_overlap  = 20,
+    length_function = len,
+)
+
+texts = text_splitter.create_documents([content])
+# print(texts[0])
+# print(texts[1])
+
 
 chat = ChatOpenAI(temperature=0)
 
@@ -32,3 +44,5 @@ messages = [
 ]
 
 print(chat(messages))
+
+# LEFT OFF AT LOADING A LARGE WEBPAGE THROUGH INDEXING: https://python.langchain.com/en/latest/modules/indexes/getting_started.html
